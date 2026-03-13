@@ -282,7 +282,7 @@
 - NONFUNC-6.3.2: Контрастность текста ≥ 4.5:1.
 - NONFUNC-6.3.3: Туториал обязателен для новых игроков (возможность пропуска с предупреждением).
 
-#image("usecase_3_1_start_online_game.png")
-#image("usecase_3_2_get_hint.png")
-#image("usecase_3_3_publish_skin.png")
-#image("usecase_3_4_handle_report.png")
+#image("uml_usecase_3_1_start_online_game.png")
+#image("uml_usecase_3_2_get_hint.png")
+#image("uml_usecase_3_3.drawio.png")
+#image("uml_usecas_3_4.drawio.png")
