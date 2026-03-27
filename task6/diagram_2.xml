@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" id="Definitions_2" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.44.0">
+  <bpmn:process id="Process_SkinModeration" name="Публикация и модерация пользовательского скина" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_Author" name="Контент-мейкер">
+      <bpmn:lane id="Lane_Moderator" name="Модератор контента">
+        <bpmn:flowNodeRef>UserTask_OpenAdmin</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_OpenModeration</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_ReviewWork</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_CheckRules</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_Approve</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_Reject</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_SpecifyReason</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Rules</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_System" name="Система">
+        <bpmn:flowNodeRef>ServiceTask_ValidateFile</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ServiceTask_ShowError</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ServiceTask_SetPendingStatus</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ServiceTask_AddToQueue</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SendTask_NotifyModerator</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SendTask_NotifyReject</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ServiceTask_PublishSkin</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SendTask_NotifyApproved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ServiceTask_Income</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Valid</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Author" name="Контент-мейкер">
+        <bpmn:flowNodeRef>UserTask_OpenWorkshop</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_UploadWork</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_SelectType</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_UploadFile</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_SetPrice</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_Submit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_FixWork</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Error</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Success</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:laneSet id="LaneSet_System" name="Система" />
+    <bpmn:laneSet id="LaneSet_Moderator" name="Модератор" />
+    <bpmn:sequenceFlow id="Flow_Start_Workshop" sourceRef="StartEvent_1" targetRef="UserTask_OpenWorkshop" />
+    <bpmn:sequenceFlow id="Flow_Workshop_Upload" sourceRef="UserTask_OpenWorkshop" targetRef="UserTask_UploadWork" />
+    <bpmn:sequenceFlow id="Flow_Upload_Type" sourceRef="UserTask_UploadWork" targetRef="UserTask_SelectType" />
+    <bpmn:sequenceFlow id="Flow_Type_File" sourceRef="UserTask_SelectType" targetRef="UserTask_UploadFile" />
+    <bpmn:sequenceFlow id="Flow_File_Info" sourceRef="UserTask_UploadFile" targetRef="UserTask_SetPrice" />
+    <bpmn:sequenceFlow id="Flow_Info_Submit" sourceRef="UserTask_SetPrice" targetRef="UserTask_Submit" />
+    <bpmn:sequenceFlow id="Flow_Submit_Validate" sourceRef="UserTask_Submit" targetRef="ServiceTask_ValidateFile" />
+    <bpmn:sequenceFlow id="Flow_Validate_Gateway" sourceRef="ServiceTask_ValidateFile" targetRef="Gateway_Valid" />
+    <bpmn:sequenceFlow id="Flow_Gateway_Valid_Yes" sourceRef="Gateway_Valid" targetRef="ServiceTask_SetPendingStatus" />
+    <bpmn:sequenceFlow id="Flow_Gateway_Valid_No" sourceRef="Gateway_Valid" targetRef="ServiceTask_ShowError" />
+    <bpmn:sequenceFlow id="Flow_Error_End" sourceRef="ServiceTask_ShowError" targetRef="EndEvent_Error" />
+    <bpmn:sequenceFlow id="Flow_Pending_Queue" sourceRef="ServiceTask_SetPendingStatus" targetRef="ServiceTask_AddToQueue" />
+    <bpmn:sequenceFlow id="Flow_Queue_Notify" sourceRef="ServiceTask_AddToQueue" targetRef="SendTask_NotifyModerator" />
+    <bpmn:sequenceFlow id="Flow_Notify_Moderation" sourceRef="SendTask_NotifyModerator" targetRef="UserTask_OpenAdmin" />
+    <bpmn:sequenceFlow id="Flow_Admin_Moderation" sourceRef="UserTask_OpenAdmin" targetRef="UserTask_OpenModeration" />
+    <bpmn:sequenceFlow id="Flow_Moderation_Review" sourceRef="UserTask_OpenModeration" targetRef="UserTask_ReviewWork" />
+    <bpmn:sequenceFlow id="Flow_Review_Check" sourceRef="UserTask_ReviewWork" targetRef="UserTask_CheckRules" />
+    <bpmn:sequenceFlow id="Flow_Check_Gateway" sourceRef="UserTask_CheckRules" targetRef="Gateway_Rules" />
+    <bpmn:sequenceFlow id="Flow_Gateway_Rules_Yes" sourceRef="Gateway_Rules" targetRef="UserTask_Approve" />
+    <bpmn:sequenceFlow id="Flow_Gateway_Rules_No" sourceRef="Gateway_Rules" targetRef="UserTask_Reject" />
+    <bpmn:sequenceFlow id="Flow_Reject_Reason" sourceRef="UserTask_Reject" targetRef="UserTask_SpecifyReason" />
+    <bpmn:sequenceFlow id="Flow_Reason_Notify" sourceRef="UserTask_SpecifyReason" targetRef="SendTask_NotifyReject" />
+    <bpmn:sequenceFlow id="Flow_NotifyReject_Fix" sourceRef="SendTask_NotifyReject" targetRef="UserTask_FixWork" />
+    <bpmn:sequenceFlow id="Flow_Fix_Resubmit" sourceRef="UserTask_FixWork" targetRef="UserTask_Submit" />
+    <bpmn:sequenceFlow id="Flow_Approve_Publish" sourceRef="UserTask_Approve" targetRef="ServiceTask_PublishSkin" />
+    <bpmn:sequenceFlow id="Flow_Publish_Notify" sourceRef="ServiceTask_PublishSkin" targetRef="SendTask_NotifyApproved" />
+    <bpmn:sequenceFlow id="Flow_NotifyApproved_Income" sourceRef="SendTask_NotifyApproved" targetRef="ServiceTask_Income" />
+    <bpmn:sequenceFlow id="Flow_Income_End" sourceRef="ServiceTask_Income" targetRef="EndEvent_Success" />
+    <bpmn:startEvent id="StartEvent_1" name="Старт">
+      <bpmn:outgoing>Flow_Start_Workshop</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="UserTask_OpenWorkshop" name="Зайти в раздел Мастерская">
+      <bpmn:incoming>Flow_Start_Workshop</bpmn:incoming>
+      <bpmn:outgoing>Flow_Workshop_Upload</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_UploadWork" name="Нажать Загрузить новую работу">
+      <bpmn:incoming>Flow_Workshop_Upload</bpmn:incoming>
+      <bpmn:outgoing>Flow_Upload_Type</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_SelectType" name="Выбрать тип скина">
+      <bpmn:incoming>Flow_Upload_Type</bpmn:incoming>
+      <bpmn:outgoing>Flow_Type_File</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_UploadFile" name="Загрузить изображение">
+      <bpmn:incoming>Flow_Type_File</bpmn:incoming>
+      <bpmn:outgoing>Flow_File_Info</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_SetPrice" name="Указать название, теги и цену">
+      <bpmn:incoming>Flow_File_Info</bpmn:incoming>
+      <bpmn:outgoing>Flow_Info_Submit</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_Submit" name="Отправить на проверку">
+      <bpmn:incoming>Flow_Info_Submit</bpmn:incoming>
+      <bpmn:incoming>Flow_Fix_Resubmit</bpmn:incoming>
+      <bpmn:outgoing>Flow_Submit_Validate</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="ServiceTask_ValidateFile" name="Проверить файл">
+      <bpmn:incoming>Flow_Submit_Validate</bpmn:incoming>
+      <bpmn:outgoing>Flow_Validate_Gateway</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_Valid" name="Файл соответствует?" gatewayDirection="Diverging">
+      <bpmn:incoming>Flow_Validate_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_Gateway_Valid_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Gateway_Valid_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="ServiceTask_ShowError" name="Отобразить ошибку">
+      <bpmn:incoming>Flow_Gateway_Valid_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_Error_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndEvent_Error" name="Завершение с ошибкой">
+      <bpmn:incoming>Flow_Error_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="ServiceTask_SetPendingStatus" name="Присвоить статус На проверке">
+      <bpmn:incoming>Flow_Gateway_Valid_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_Pending_Queue</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="ServiceTask_AddToQueue" name="Добавить в очередь модерации">
+      <bpmn:incoming>Flow_Pending_Queue</bpmn:incoming>
+      <bpmn:outgoing>Flow_Queue_Notify</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sendTask id="SendTask_NotifyModerator" name="Уведомить модератора">
+      <bpmn:incoming>Flow_Queue_Notify</bpmn:incoming>
+      <bpmn:outgoing>Flow_Notify_Moderation</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:userTask id="UserTask_OpenAdmin" name="Зайти в админ-панель">
+      <bpmn:incoming>Flow_Notify_Moderation</bpmn:incoming>
+      <bpmn:outgoing>Flow_Admin_Moderation</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_OpenModeration" name="Открыть раздел модерации">
+      <bpmn:incoming>Flow_Admin_Moderation</bpmn:incoming>
+      <bpmn:outgoing>Flow_Moderation_Review</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_ReviewWork" name="Просмотреть работу">
+      <bpmn:incoming>Flow_Moderation_Review</bpmn:incoming>
+      <bpmn:outgoing>Flow_Review_Check</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_CheckRules" name="Проверить правила">
+      <bpmn:incoming>Flow_Review_Check</bpmn:incoming>
+      <bpmn:outgoing>Flow_Check_Gateway</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_Rules" name="Соответствует правилам?" gatewayDirection="Diverging">
+      <bpmn:incoming>Flow_Check_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_Gateway_Rules_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Gateway_Rules_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="UserTask_Approve" name="Нажать Одобрить">
+      <bpmn:incoming>Flow_Gateway_Rules_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_Approve_Publish</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_Reject" name="Нажать Отклонить">
+      <bpmn:incoming>Flow_Gateway_Rules_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_Reject_Reason</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_SpecifyReason" name="Указать причину отказа">
+      <bpmn:incoming>Flow_Reject_Reason</bpmn:incoming>
+      <bpmn:outgoing>Flow_Reason_Notify</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sendTask id="SendTask_NotifyReject" name="Уведомить автора об отказе">
+      <bpmn:incoming>Flow_Reason_Notify</bpmn:incoming>
+      <bpmn:outgoing>Flow_NotifyReject_Fix</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:userTask id="UserTask_FixWork" name="Исправить замечания">
+      <bpmn:incoming>Flow_NotifyReject_Fix</bpmn:incoming>
+      <bpmn:outgoing>Flow_Fix_Resubmit</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="ServiceTask_PublishSkin" name="Опубликовать скин">
+      <bpmn:incoming>Flow_Approve_Publish</bpmn:incoming>
+      <bpmn:outgoing>Flow_Publish_Notify</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sendTask id="SendTask_NotifyApproved" name="Уведомить автора об одобрении">
+      <bpmn:incoming>Flow_Publish_Notify</bpmn:incoming>
+      <bpmn:outgoing>Flow_NotifyApproved_Income</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:serviceTask id="ServiceTask_Income" name="Начислить доход от продаж">
+      <bpmn:incoming>Flow_NotifyApproved_Income</bpmn:incoming>
+      <bpmn:outgoing>Flow_Income_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndEvent_Success" name="Успешное завершение">
+      <bpmn:incoming>Flow_Income_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:textAnnotation id="TextAnnotation_0lxvn5n">
+      <bpmn:text>Нет</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1djly2k" associationDirection="None" sourceRef="Flow_Gateway_Rules_No" targetRef="TextAnnotation_0lxvn5n" />
+    <bpmn:textAnnotation id="TextAnnotation_0uqbz8h">
+      <bpmn:text>Да</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_02zb7bc" associationDirection="None" sourceRef="Flow_Gateway_Rules_Yes" targetRef="TextAnnotation_0uqbz8h" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_SkinModeration">
+      <bpmndi:BPMNShape id="Lane_Author_shape" bpmnElement="Lane_Author" isHorizontal="true">
+        <dc:Bounds x="120" y="80" width="3200" height="500" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="130" y="20" width="120" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_System_shape" bpmnElement="Lane_System" isHorizontal="true">
+        <dc:Bounds x="120" y="580" width="3200" height="500" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="130" y="520" width="60" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Moderator_shape" bpmnElement="Lane_Moderator" isHorizontal="true">
+        <dc:Bounds x="120" y="1080" width="3200" height="500" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="130" y="1020" width="130" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_StartEvent_1" bpmnElement="StartEvent_1" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="160" y="160" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="163" y="196" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_OpenWorkshop" bpmnElement="UserTask_OpenWorkshop" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="240" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_UploadWork" bpmnElement="UserTask_UploadWork" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="380" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_SelectType" bpmnElement="UserTask_SelectType" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="520" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_UploadFile" bpmnElement="UserTask_UploadFile" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="660" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_SetPrice" bpmnElement="UserTask_SetPrice" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="800" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_Submit" bpmnElement="UserTask_Submit" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="940" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_ServiceTask_ValidateFile" bpmnElement="ServiceTask_ValidateFile" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1080" y="694" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_Valid" bpmnElement="Gateway_Valid" isMarkerVisible="true">
+        <dc:Bounds x="1220" y="707" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1280" y="718" width="78" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_ServiceTask_ShowError" bpmnElement="ServiceTask_ShowError" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1310" y="620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_Error" bpmnElement="EndEvent_Error" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="1342" y="160" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1323" y="122.5" width="73" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_ServiceTask_SetPendingStatus" bpmnElement="ServiceTask_SetPendingStatus" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1310" y="770" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_ServiceTask_AddToQueue" bpmnElement="ServiceTask_AddToQueue" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1450" y="770" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SendTask_NotifyModerator" bpmnElement="SendTask_NotifyModerator" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1590" y="770" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_OpenAdmin" bpmnElement="UserTask_OpenAdmin" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="1590" y="1270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_OpenModeration" bpmnElement="UserTask_OpenModeration" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="1730" y="1270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_ReviewWork" bpmnElement="UserTask_ReviewWork" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="1870" y="1270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_CheckRules" bpmnElement="UserTask_CheckRules" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="2010" y="1270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_Rules" bpmnElement="Gateway_Rules" isMarkerVisible="true">
+        <dc:Bounds x="2150" y="1283" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2203" y="1296" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_Approve" bpmnElement="UserTask_Approve" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="2250" y="1350" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_Reject" bpmnElement="UserTask_Reject" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="2250" y="1190" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_SpecifyReason" bpmnElement="UserTask_SpecifyReason" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="2250" y="1090" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SendTask_NotifyReject" bpmnElement="SendTask_NotifyReject" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1780" y="694" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_UserTask_FixWork" bpmnElement="UserTask_FixWork" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="1780" y="138" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_ServiceTask_PublishSkin" bpmnElement="ServiceTask_PublishSkin" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="2390" y="694" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SendTask_NotifyApproved" bpmnElement="SendTask_NotifyApproved" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="2530" y="694" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_ServiceTask_Income" bpmnElement="ServiceTask_Income" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="2670" y="694" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_Success" bpmnElement="EndEvent_Success" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="2702" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2688" y="124.5" width="63" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0lxvn5n_di" bpmnElement="TextAnnotation_0lxvn5n">
+        <dc:Bounds x="2130" y="1180" width="50" height="30" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0uqbz8h_di" bpmnElement="TextAnnotation_0uqbz8h">
+        <dc:Bounds x="2120" y="1400" width="50" height="30" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Flow_Start_Workshop" bpmnElement="Flow_Start_Workshop">
+        <di:waypoint x="196" y="178" />
+        <di:waypoint x="240" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Workshop_Upload" bpmnElement="Flow_Workshop_Upload">
+        <di:waypoint x="340" y="180" />
+        <di:waypoint x="380" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Upload_Type" bpmnElement="Flow_Upload_Type">
+        <di:waypoint x="480" y="180" />
+        <di:waypoint x="520" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Type_File" bpmnElement="Flow_Type_File">
+        <di:waypoint x="620" y="180" />
+        <di:waypoint x="660" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_File_Info" bpmnElement="Flow_File_Info">
+        <di:waypoint x="760" y="180" />
+        <di:waypoint x="800" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Info_Submit" bpmnElement="Flow_Info_Submit">
+        <di:waypoint x="900" y="180" />
+        <di:waypoint x="940" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Submit_Validate" bpmnElement="Flow_Submit_Validate">
+        <di:waypoint x="1040" y="180" />
+        <di:waypoint x="1060" y="180" />
+        <di:waypoint x="1060" y="734" />
+        <di:waypoint x="1080" y="734" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Validate_Gateway" bpmnElement="Flow_Validate_Gateway">
+        <di:waypoint x="1180" y="734" />
+        <di:waypoint x="1220" y="732" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Gateway_Valid_Yes" bpmnElement="Flow_Gateway_Valid_Yes">
+        <di:waypoint x="1245" y="757" />
+        <di:waypoint x="1245" y="810" />
+        <di:waypoint x="1310" y="810" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Gateway_Valid_No" bpmnElement="Flow_Gateway_Valid_No">
+        <di:waypoint x="1245" y="707" />
+        <di:waypoint x="1245" y="663" />
+        <di:waypoint x="1310" y="663" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Error_End" bpmnElement="Flow_Error_End">
+        <di:waypoint x="1360" y="620" />
+        <di:waypoint x="1360" y="196" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Pending_Queue" bpmnElement="Flow_Pending_Queue">
+        <di:waypoint x="1410" y="810" />
+        <di:waypoint x="1450" y="810" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Queue_Notify" bpmnElement="Flow_Queue_Notify">
+        <di:waypoint x="1550" y="810" />
+        <di:waypoint x="1590" y="810" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Notify_Moderation" bpmnElement="Flow_Notify_Moderation">
+        <di:waypoint x="1640" y="850" />
+        <di:waypoint x="1640" y="1270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Admin_Moderation" bpmnElement="Flow_Admin_Moderation">
+        <di:waypoint x="1690" y="1310" />
+        <di:waypoint x="1730" y="1310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Moderation_Review" bpmnElement="Flow_Moderation_Review">
+        <di:waypoint x="1830" y="1310" />
+        <di:waypoint x="1870" y="1310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Review_Check" bpmnElement="Flow_Review_Check">
+        <di:waypoint x="1970" y="1310" />
+        <di:waypoint x="2010" y="1310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Check_Gateway" bpmnElement="Flow_Check_Gateway">
+        <di:waypoint x="2110" y="1310" />
+        <di:waypoint x="2150" y="1308" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Gateway_Rules_Yes" bpmnElement="Flow_Gateway_Rules_Yes">
+        <di:waypoint x="2175" y="1333" />
+        <di:waypoint x="2175" y="1392" />
+        <di:waypoint x="2250" y="1392" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Gateway_Rules_No" bpmnElement="Flow_Gateway_Rules_No">
+        <di:waypoint x="2175" y="1283" />
+        <di:waypoint x="2175" y="1230" />
+        <di:waypoint x="2250" y="1230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Reject_Reason" bpmnElement="Flow_Reject_Reason">
+        <di:waypoint x="2300" y="1190" />
+        <di:waypoint x="2300" y="1170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Reason_Notify" bpmnElement="Flow_Reason_Notify">
+        <di:waypoint x="2251" y="1163" />
+        <di:waypoint x="2135" y="1163" />
+        <di:waypoint x="2135" y="734" />
+        <di:waypoint x="1880" y="734" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_NotifyReject_Fix" bpmnElement="Flow_NotifyReject_Fix">
+        <di:waypoint x="1830" y="694" />
+        <di:waypoint x="1830" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Fix_Resubmit" bpmnElement="Flow_Fix_Resubmit">
+        <di:waypoint x="1780" y="178" />
+        <di:waypoint x="1410" y="178" />
+        <di:waypoint x="1410" y="110" />
+        <di:waypoint x="990" y="110" />
+        <di:waypoint x="990" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Approve_Publish" bpmnElement="Flow_Approve_Publish">
+        <di:waypoint x="2350" y="1390" />
+        <di:waypoint x="2370" y="1390" />
+        <di:waypoint x="2370" y="734" />
+        <di:waypoint x="2390" y="734" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Publish_Notify" bpmnElement="Flow_Publish_Notify">
+        <di:waypoint x="2490" y="734" />
+        <di:waypoint x="2530" y="734" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_NotifyApproved_Income" bpmnElement="Flow_NotifyApproved_Income">
+        <di:waypoint x="2630" y="734" />
+        <di:waypoint x="2670" y="734" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_Income_End" bpmnElement="Flow_Income_End">
+        <di:waypoint x="2720" y="694" />
+        <di:waypoint x="2720" y="198" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1djly2k_di" bpmnElement="Association_1djly2k">
+        <di:waypoint x="2186" y="1230" />
+        <di:waypoint x="2136" y="1210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_02zb7bc_di" bpmnElement="Association_02zb7bc">
+        <di:waypoint x="2183" y="1392" />
+        <di:waypoint x="2170" y="1415" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
