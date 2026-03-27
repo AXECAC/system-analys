@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Хуангджа Маджонг | Прототип приложения</title>
+    <!-- Подключение шрифтов и стилей -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1a2a32;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Контейнер для мобильного прототипа */
+        .phone-mock {
+            max-width: 380px;
+            width: 100%;
+            background-color: #f5f0e7;
+            border-radius: 48px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            overflow: hidden;
+            position: relative;
+            height: 700px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        /* Статус бар */
+        .status-bar {
+            background: #2c3e2f;
+            color: white;
+            padding: 12px 20px 8px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Основная область с прокруткой */
+        .app-screen {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            scrollbar-width: thin;
+        }
+
+        /* Навигация (таб-бар) */
+        .tab-bar {
+            background: #ffffff;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 20px 20px;
+            border-top: 1px solid #e9e4d8;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #7f8c8d;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .tab-item i {
+            font-size: 22px;
+        }
+        .tab-item.active {
+            color: #c49a6c;
+            font-weight: 600;
+        }
+
+        /* Компоненты UI */
+        .hero-card {
+            background: #e8e0d3;
+            border-radius: 24px;
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        .game-table-preview {
+            background: #2c5a3b;
+            border-radius: 32px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffecb3;
+            font-weight: bold;
+            margin-bottom: 12px;
+            background-image: radial-gradient(circle at 20% 40%, rgba(255,215,150,0.2) 2%, transparent 2.5%);
+            background-size: 20px 20px;
+        }
+        .btn {
+            background: #c49a6c;
+            border: none;
+            padding: 12px;
+            border-radius: 60px;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+            display: inline-block;
+        }
+        .btn-secondary {
+            background: #e0d6c8;
+            color: #4a3b2c;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #c49a6c;
+            color: #c49a6c;
+        }
+        .section-title {
+            font-weight: 700;
+            font-size: 18px;
+            margin: 20px 0 12px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .skin-item {
+            background: white;
+            border-radius: 20px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .skin-icon {
+            width: 50px;
+            height: 50px;
+            background: #d4b48c;
+            border-radius: 16px;
+        }
+        .badge {
+            background: #f3b33d;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .ai-coach {
+            background: #fff3e0;
+            border-left: 6px solid #c49a6c;
+            padding: 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 16px 0;
+        }
+
+        /* Стили для экрана игры */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .tiles-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin: 16px 0;
+        }
+        .tile {
+            background: #fcf9f2;
+            width: 56px;
+            height: 70px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            font-weight: bold;
+            font-size: 20px;
+            border: 1px solid #ddd0bc;
+        }
+
+        /* Скрытые экраны */
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+
+        /* Уведомления и чат */
+        .notification {
+            background: #2c3e2f;
+            color: white;
+            border-radius: 40px;
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .moderation-badge {
+            background: #e67e22;
+            color: white;
+            border-radius: 16px;
+            padding: 2px 8px;
+            font-size: 11px;
+        }
+
+        footer {
+            font-size: 10px;
+            text-align: center;
+            padding: 12px;
+            color: #8b7a66;
+        }
+    </style>
+</head>
+<body>
+<div class="phone-mock">
+    <div class="status-bar">
+        <span>9:41</span>
+        <span><i class="fas fa-signal"></i> <i class="fas fa-battery-full"></i></span>
+    </div>
+
+    <!-- Динамические экраны -->
+    <div class="app-screen" id="appContainer">
+        <!-- Главный экран (лента) -->
+        <div id="homeScreen" class="screen active">
+            <div class="hero-card">
+                <div class="game-table-preview">
+                    <i class="fas fa-dragon" style="font-size: 32px; margin-right: 8px;"></i> Маджонг Онлайн
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn" id="quickPlayBtn">⚡ Быстрая игра</button>
+                    <button class="btn btn-secondary" id="createRoomBtn">🏮 Создать комнату</button>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <span>🏆 Текущий сезон: Летний дворец</span>
+                <span class="badge">Дней осталось: 12</span>
+            </div>
+            <div class="skin-item">
+                <div class="skin-icon" style="background: #6b8c5c;"></div>
+                <div><strong>Сезонный пропуск</strong><br>Эксклюзивные фишки "Император"</div>
+                <div style="margin-left: auto;"><i class="fas fa-chevron-right"></i></div>
+            </div>
+            
+            <div class="section-title">
+                <span>🎴 AI-тренер</span>
+                <span style="font-size: 13px; color: #c49a6c;">Совет дня</span>
+            </div>
+            <div class="ai-coach">
+                <i class="fas fa-robot"></i> <strong>Совет:</strong> В начале игры собирайте "четвёрки" (кан) с осторожностью. Это может ускорить победу соперника.
+                <button class="btn-outline" style="margin-top: 8px; padding: 6px; font-size: 13px;" id="askCoachBtn">Спросить совет сейчас</button>
+            </div>
+
+            <div class="section-title">
+                <span>📢 Активность друзей</span>
+                <span>3 в сети</span>
+            </div>
+            <div class="skin-item">
+                <i class="fas fa-user-circle fa-2x"></i>
+                <div><strong>Ли Лин</strong><br>завершил партию с рейтингом +24</div>
+            </div>
+            <div class="skin-item">
+                <i class="fas fa-user-circle fa-2x"></i>
+                <div><strong>Мастер Вэй</strong><br>ищет соперников</div>
+                <button class="btn-outline" style="width: auto; padding: 6px 12px;">Пригласить</button>
+            </div>
+
+            <div class="section-title">
+                <span>🎨 Мастерская сообщества</span>
+                <span><i class="fas fa-plus-circle"></i> Загрузить</span>
+            </div>
+            <div class="skin-item">
+                <div class="skin-icon" style="background: #d9a13b;"></div>
+                <div><strong>Скин "Цветущая сакура"</strong><br>от пользователя Hanafuda</div>
+                <i class="fas fa-download"></i>
+            </div>
+        </div>
+
+        <!-- Экран игры (пример во время партии) -->
+        <div id="gameScreen" class="screen">
+            <div class="game-header">
+                <div><i class="fas fa-arrow-left" id="backFromGame"></i> <span style="margin-left: 8px;">Игра #2341</span></div>
+                <div><i class="fas fa-cog"></i></div>
+            </div>
+            <div style="background:#2f5a3b; border-radius: 28px; padding: 12px;">
+                <div style="display: flex; justify-content: space-between; color: white; margin-bottom: 12px;">
+                    <span><i class="fas fa-user"></i> 李华 (Вы) 13 фишек</span>
+                    <span><i class="fas fa-robot"></i> ИИ-игрок 14</span>
+                </div>
+                <div class="tiles-row">
+                    <div class="tile">🀙</div><div class="tile">🀙</div><div class="tile">🀚</div><div class="tile">🀛</div>
+                    <div class="tile">🀛</div><div class="tile">🀜</div><div class="tile">🀝</div><div class="tile">🀞</div>
+                    <div class="tile">🀟</div><div class="tile">🀠</div><div class="tile">🀡</div><div class="tile">🀐</div>
+                    <div class="tile">🀑</div>
+                </div>
+                <div style="margin: 12px 0; text-align: center; background: #e9ddce; border-radius: 40px; padding: 6px;">
+                    🀒 Сброшено: 🀐
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn" id="drawTileBtn">🎴 Взять фишку</button>
+                    <button class="btn btn-secondary" id="discardTileBtn">♻️ Сбросить</button>
+                </div>
+                <div class="ai-coach" style="margin-top: 12px; background:#ffe8cf;">
+                    <i class="fas fa-robot"></i> Подсказка: соберите тройку бамбуков. Ход соперника может дать вам шанс на "пон".
+                </div>
+            </div>
+            <!-- Кнопка для имитации отключения / восстановления -->
+            <div style="margin-top: 20px;">
+                <button class="btn-outline" id="simulateDisconnectBtn" style="width:100%">📡 Симуляция обрыва связи (60 сек на переподключение)</button>
+            </div>
+        </div>
+
+        <!-- Экран Мастерской и профиля -->
+        <div id="workshopScreen" class="screen">
+            <div class="section-title">🖌️ Мастерская сообщества</div>
+            <div class="skin-item"><div class="skin-icon"></div><div><strong>Мой скин "Тигр"</strong> <span class="moderation-badge">На модерации</span></div></div>
+            <div class="skin-item"><div class="skin-icon"></div><div><strong>Новая работа</strong><br>Загрузить изображение .png</div><i class="fas fa-upload"></i></div>
+            <div class="btn btn-secondary" id="uploadNewWorkBtn">➕ Загрузить новый скин</div>
+            <div class="section-title">⭐ Популярные наборы</div>
+            <div class="skin-item"><div class="skin-icon"></div><div>Набор "Династия Мин"<br>🔥 1245 скачиваний</div><div>💎 99</div></div>
+            <div class="notification" style="margin-top: 20px;"><i class="fas fa-info-circle"></i> Ваш скин на модерации. Обычно проверка занимает до 24 часов.</div>
+        </div>
+
+        <!-- Экран рейтингов и турниров -->
+        <div id="rankScreen" class="screen">
+            <div class="section-title">🏅 Таблица лидеров (скоростной режим)</div>
+            <div class="skin-item"><span>1.</span> <strong>ShanXi_Master</strong> <span style="margin-left: auto;">⏱️ 2:34</span></div>
+            <div class="skin-item"><span>2.</span> <strong>DragonPung</strong> <span style="margin-left: auto;">⏱️ 2:58</span></div>
+            <div class="skin-item"><span>3.</span> <strong>Вы (ранг 156)</strong> <span style="margin-left: auto;">⏱️ 4:22</span></div>
+            <div class="btn" id="joinTournamentBtn">🏆 Участвовать в турнире провинции</div>
+            <div class="ai-coach"><i class="fas fa-chart-line"></i> Ваш рейтинг: 1420. Для повышения участвуйте в быстрых играх.</div>
+        </div>
+
+        <!-- Экран уведомлений модератора (для демонстрации роли модератора) -->
+        <div id="moderationScreen" class="screen">
+            <div class="section-title">🛡️ Панель модератора</div>
+            <div class="notification" style="background: #c49a6c;">❗ 3 новых жалобы на пользователей</div>
+            <div class="skin-item"><div><strong>Жалоба #101</strong><br>Игрок "XxX_Hacker" — оскорбления в чате</div><button class="btn-outline" style="width: auto;">Рассмотреть</button></div>
+            <div class="skin-item"><div><strong>Жалоба #102</strong><br>Подозрительная игра, возможно читы</div><button class="btn-outline">Логи</button></div>
+            <div class="btn" id="goToComplaintBtn">Перейти в раздел модерации жалоб</div>
+            <div class="ai-coach">История нарушений: пользователь получал предупреждения. Доступна заморозка аккаунта.</div>
+            <button class="btn-secondary" id="freezeAccountDemoBtn">🔒 Заморозить аккаунт нарушителя (демо)</button>
+        </div>
+    </div>
+
+    <!-- Таббар навигации -->
+    <div class="tab-bar">
+        <div class="tab-item active" data-tab="home"><i class="fas fa-home"></i><span>Главная</span></div>
+        <div class="tab-item" data-tab="game"><i class="fas fa-gamepad"></i><span>Игра</span></div>
+        <div class="tab-item" data-tab="workshop"><i class="fas fa-palette"></i><span>Мастерская</span></div>
+        <div class="tab-item" data-tab="rank"><i class="fas fa-trophy"></i><span>Рейтинг</span></div>
+        <div class="tab-item" data-tab="moderation"><i class="fas fa-gavel"></i><span>Модерация</span></div>
+    </div>
+    <footer>© Хуангджа Маджонг | AI-чат поддержки: /help</footer>
+</div>
+
+<script>
+    // Простейшая навигация между экранами
+    const screens = {
+        home: document.getElementById('homeScreen'),
+        game: document.getElementById('gameScreen'),
+        workshop: document.getElementById('workshopScreen'),
+        rank: document.getElementById('rankScreen'),
+        moderation: document.getElementById('moderationScreen')
+    };
+    const tabs = document.querySelectorAll('.tab-item');
+    function showScreen(screenId) {
+        Object.keys(screens).forEach(key => {
+            screens[key].classList.remove('active');
+        });
+        screens[screenId].classList.add('active');
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+            if(tab.getAttribute('data-tab') === screenId) tab.classList.add('active');
+        });
+    }
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const screenName = tab.getAttribute('data-tab');
+            if(screenName && screens[screenName]) showScreen(screenName);
+        });
+    });
+
+    // Демо переходы и бизнес-логика прототипа
+    document.getElementById('quickPlayBtn')?.addEventListener('click', () => {
+        alert("⚡ Поиск партии... (MVP: система подбирает 4 игроков или заполняет ИИ)");
+        showScreen('game');
+        // дополнительно можно симулировать начало партии
+    });
+    document.getElementById('createRoomBtn')?.addEventListener('click', () => {
+        alert("🏮 Создание приватной комнаты. Можно пригласить друзей.");
+        showScreen('game');
+    });
+    document.getElementById('askCoachBtn')?.addEventListener('click', () => {
+        alert("🤖 AI-тренер: В текущей позиции лучше отдать предпочтение сборке 'пятёрок ветров'. Желаете разбор?");
+    });
+    document.getElementById('backFromGame')?.addEventListener('click', () => {
+        showScreen('home');
+    });
+    document.getElementById('uploadNewWorkBtn')?.addEventListener('click', () => {
+        alert("🖼️ Загрузка скина: проверка формата, отправка на модерацию. (Согласно требованиям: модератор проверит соответствие правилам)");
+    });
+    document.getElementById('joinTournamentBtn')?.addEventListener('click', () => {
+        alert("🏆 Вы зарегистрированы в турнире на скорость! Система подберет соперников.");
+    });
+    document.getElementById('simulateDisconnectBtn')?.addEventListener('click', () => {
+        alert("📡 Потеря соединения смоделирована. Сервер: зафиксирован разрыв, таймер 60 секунд. Игрок может переподключиться или игра будет заменена на AI.");
+        // Согласно BR и BPMN диаграмме обработки отключения (diagram_1)
+        setTimeout(() => {
+            if(confirm("60 секунд истекло. Переподключиться? (Имитация восстановления)")) {
+                alert("✅ Игрок восстановлен, состояние синхронизировано. Партия продолжается.");
+            } else {
+                alert("🤖 Замена на AI-игрока. Партия продолжается с ботом, уведомление другим игрокам.");
+            }
+        }, 1000);
+    });
+    document.getElementById('freezeAccountDemoBtn')?.addEventListener('click', () => {
+        alert("🔒 Аккаунт нарушителя заморожен на 24 часа. Причина: повторное нарушение. Уведомление отправлено, запись в лог модерации (согласно процессу из diagram_3)");
+    });
+    document.getElementById('goToComplaintBtn')?.addEventListener('click', () => {
+        alert("Переход в детальную карточку жалобы: просмотр доказательств, история нарушений. Решение: отклонить/заморозить/заблокировать.");
+    });
+    // Демо для модерации на главном экране дополнительно
+    // Имитация игрового хода
+    document.getElementById('drawTileBtn')?.addEventListener('click', () => alert("Вы взяли фишку 🀒. Ход переходит к следующему игроку. (Синхронизация с сервером)"));
+    document.getElementById('discardTileBtn')?.addEventListener('click', () => alert("Сброшена фишка 🀐. Другие игроки могут взять для сета."));
+    
+    // Также небольшая демонстрация модерации жалоб
+    // при старте показываем home
+    showScreen('home');
+</script>
+</body>
+</html>

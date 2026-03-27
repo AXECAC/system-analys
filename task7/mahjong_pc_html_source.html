@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хуангджа Маджонг | ПК-версия — прототип</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f1a14;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        /* ПК-контейнер — широкая панель как десктопное приложение */
+        .desktop-app {
+            max-width: 1400px;
+            width: 100%;
+            background: #efe6da;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            min-height: 720px;
+        }
+
+        /* Верхняя панель (навигация) */
+        .top-nav {
+            background: #2c3e2f;
+            padding: 12px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            border-bottom: 1px solid #4a6a3a;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 20px;
+        }
+        .logo-area i {
+            font-size: 28px;
+            color: #e9c891;
+        }
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            background: #1f2f22;
+            padding: 4px;
+            border-radius: 48px;
+        }
+        .nav-btn {
+            background: transparent;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            color: #cfd8cf;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+        .nav-btn.active {
+            background: #c49a6c;
+            color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .user-area {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .user-badge {
+            background: #4a6a3a;
+            border-radius: 40px;
+            padding: 6px 16px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .icon-btn {
+            background: rgba(255,255,240,0.1);
+            border: none;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: #e9c891;
+        }
+
+        /* Основной контент с двумя панелями (sidebar + контент) */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 280px;
+            background: #fdf8f0;
+            border-right: 1px solid #e2d8cc;
+            padding: 24px 16px;
+            overflow-y: auto;
+        }
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px 32px;
+        }
+
+        /* Карточки и элементы UI */
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: 0.2s;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        .btn-primary {
+            background: #c49a6c;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+        .btn-secondary {
+            background: #e8e0d3;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 500;
+            color: #4a3b2c;
+            cursor: pointer;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #c49a6c;
+            color: #c49a6c;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .game-preview {
+            background: #2c5a3b;
+            border-radius: 28px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+        }
+        .tiles-demo {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 16px 0;
+        }
+        .tile {
+            background: #fcf9f2;
+            width: 58px;
+            height: 74px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .row-split {
+            display: flex;
+            gap: 20px;
+            margin-top: 16px;
+        }
+        .info-badge {
+            background: #fef1df;
+            padding: 12px;
+            border-radius: 20px;
+            border-left: 5px solid #c49a6c;
+            font-size: 14px;
+        }
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee5d8;
+        }
+        .skin-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #faf6ef;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+        .moderation-alert {
+            background: #fbe9e7;
+            border-left: 4px solid #e67e22;
+            padding: 12px;
+            border-radius: 16px;
+        }
+
+        /* Адаптивность под разные разрешения ПК */
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 240px;
+            }
+            .content-area {
+                padding: 20px;
+            }
+        }
+        .hidden {
+            display: none;
+        }
+        footer {
+            font-size: 12px;
+            text-align: center;
+            padding: 12px;
+            background: #f1ebe2;
+            color: #7a6852;
+            border-top: 1px solid #e2d8cc;
+        }
+    </style>
+</head>
+<body>
+<div class="desktop-app">
+    <div class="top-nav">
+        <div class="logo-area">
+            <i class="fas fa-dragon"></i>
+            <span>Хуангджа Маджонг</span>
+        </div>
+        <div class="nav-links" id="navLinks">
+            <button class="nav-btn active" data-section="home">Главная</button>
+            <button class="nav-btn" data-section="game">Игра</button>
+            <button class="nav-btn" data-section="workshop">Мастерская</button>
+            <button class="nav-btn" data-section="rank">Рейтинг</button>
+            <button class="nav-btn" data-section="moderation">Модерация</button>
+            <button class="nav-btn" data-section="profile">Профиль</button>
+        </div>
+        <div class="user-area">
+            <div class="user-badge"><i class="fas fa-user"></i> Игрок_Мастер <span class="badge" style="background:#c49a6c;">⭐ 1420</span></div>
+            <i class="fas fa-bell icon-btn"></i>
+            <i class="fas fa-cog icon-btn"></i>
+        </div>
+    </div>
+    <div class="main-layout">
+        <!-- Боковая панель с динамическим контентом (виджеты) -->
+        <div class="sidebar" id="sidebar">
+            <div class="card">
+                <div class="card-header"><span>🎴 AI-тренер</span> <i class="fas fa-robot"></i></div>
+                <div class="info-badge" id="coachTip">Совет: Начинайте с открытых комбинаций, чтобы ускорить темп игры.</div>
+                <button class="btn-outline" style="margin-top: 12px; width:100%" id="askCoachBtn">Спросить совет</button>
+            </div>
+            <div class="card">
+                <div class="card-header">🏆 Сезон: Летний дворец</div>
+                <div>До конца сезона: 12 дней</div>
+                <progress value="65" max="100" style="width:100%; margin: 10px 0;"></progress>
+                <button class="btn-secondary" style="width:100%">Купить пропуск</button>
+            </div>
+            <div class="card">
+                <div class="card-header">👥 Друзья онлайн</div>
+                <div>▪️ Ли Лин — в игре</div>
+                <div>▪️ DragonPung — ищет партию</div>
+                <div>▪️ MahjongPro — AFK</div>
+                <button class="btn-outline" style="margin-top: 8px;">Пригласить в комнату</button>
+            </div>
+        </div>
+
+        <!-- Основная область контента (разные экраны) -->
+        <div class="content-area" id="mainContent">
+            <!-- ЭКРАН ГЛАВНАЯ -->
+            <div id="homeSection" class="screen-section">
+                <div class="game-preview">
+                    <div style="display: flex; justify-content: space-between;"><span><i class="fas fa-gamepad"></i> Онлайн-партия</span><span>4/4 игрока</span></div>
+                    <div class="tiles-demo">
+                        <div class="tile">🀙</div><div class="tile">🀚</div><div class="tile">🀛</div><div class="tile">🀐</div><div class="tile">🀑</div><div class="tile">🀒</div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 12px;">
+                        <button class="btn-primary" id="quickGameBtnDesktop">⚡ Быстрая игра</button>
+                        <button class="btn-secondary" id="createPrivateBtnDesktop">🏮 Создать комнату</button>
+                        <button class="btn-outline" id="aiTrainBtnDesktop">🤖 Тренировка с ИИ</button>
+                    </div>
+                </div>
+                <div class="row-split">
+                    <div class="card" style="flex:1">
+                        <div class="card-header">🔥 Новые скины в мастерской</div>
+                        <div class="skin-row"><i class="fas fa-palette"></i> <strong>Скин "Золотой дракон"</strong> <span style="margin-left: auto;">💎 120</span></div>
+                        <div class="skin-row"><i class="fas fa-palette"></i> <strong>Стол "Императорский сад"</strong> <span style="margin-left: auto;">🏆 сезонный</span></div>
+                        <button class="btn-secondary" id="gotoWorkshopBtn">Перейти в мастерскую</button>
+                    </div>
+                    <div class="card" style="flex:1">
+                        <div class="card-header">📰 Последние новости</div>
+                        <div>🏅 Запущен турнир "Провинция Хунань"</div>
+                        <div>✨ AI-тренер получил обновление: советы в реальном времени</div>
+                        <div>🎨 Конкурс скинов сообщества до 15 мая</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ЭКРАН ИГРЫ (полноценное поле) -->
+            <div id="gameSection" class="screen-section hidden">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span><i class="fas fa-arrow-left" id="backHomeFromGame" style="cursor:pointer;"></i> Партия #2234</span>
+                        <span><i class="fas fa-user-clock"></i> Ход: Игрок 2</span>
+                    </div>
+                    <div style="background: #2f5a3b; border-radius: 32px; padding: 20px; margin-top: 16px;">
+                        <div style="display: flex; justify-content: space-between; color: #f9e2b7;">
+                            <span>🀆 Северный</span><span>🀆 Западный</span><span>🀆 Южный</span><span>🀆 Восточный (Вы)</span>
+                        </div>
+                        <div class="tiles-demo" style="justify-content: center; margin: 20px 0;">
+                            <div class="tile">🀙</div><div class="tile">🀙</div><div class="tile">🀚</div><div class="tile">🀛</div>
+                            <div class="tile">🀜</div><div class="tile">🀝</div><div class="tile">🀞</div><div class="tile">🀟</div>
+                            <div class="tile">🀠</div><div class="tile">🀡</div><div class="tile">🀐</div><div class="tile">🀑</div>
+                            <div class="tile">🀒</div>
+                        </div>
+                        <div style="background:#e8dccc; border-radius: 60px; padding: 8px; text-align: center; margin-bottom: 16px;">Сброшено: 🀐</div>
+                        <div style="display: flex; gap: 16px;">
+                            <button class="btn-primary" id="drawTilePc">Взять фишку</button>
+                            <button class="btn-secondary" id="discardTilePc">Сбросить</button>
+                            <button class="btn-outline" id="callPungPc">Объявить Пон</button>
+                        </div>
+                        <div class="info-badge" style="margin-top: 16px;"><i class="fas fa-robot"></i> AI-тренер: Сбросьте 🀐, чтобы собрать тройку бамбуков.</div>
+                        <button class="btn-outline" id="simulateDisconnectPc" style="margin-top: 16px; width:100%">📡 Симуляция обрыва связи (60 сек)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- МАСТЕРСКАЯ -->
+            <div id="workshopSection" class="screen-section hidden">
+                <div class="card">
+                    <div class="card-header">🖌️ Мастерская сообщества</div>
+                    <div class="skin-row"><div class="tile" style="width:40px;height:40px;">🎨</div><div><strong>Мой скин "Тигр"</strong><br><span style="font-size:12px;">Статус: на модерации</span></div><button class="btn-outline">Просмотр</button></div>
+                    <div class="skin-row"><div class="tile" style="width:40px;height:40px;">🐉</div><div><strong>Новая загрузка</strong><br>Файл: skin_dragon.png</div><button class="btn-primary" id="uploadSkinDemo">Загрузить</button></div>
+                    <hr style="margin: 16px 0;">
+                    <div class="card-header">⭐ Популярные наборы</div>
+                    <div class="skin-row">Набор "Династия Тан" — 299💎 <button class="btn-secondary">Купить</button></div>
+                    <div class="skin-row">Стол "Весенний фестиваль" — сезонный <button class="btn-outline">Подробнее</button></div>
+                </div>
+            </div>
+
+            <!-- РЕЙТИНГ И ТУРНИРЫ -->
+            <div id="rankSection" class="screen-section hidden">
+                <div class="card">
+                    <div class="card-header">🏅 Таблица лидеров (Скоростной режим)</div>
+                    <div class="leaderboard-item"><span>1. ShanXi_Master</span><span>⏱️ 2:34</span><span>🏆 2450</span></div>
+                    <div class="leaderboard-item"><span>2. DragonPung</span><span>⏱️ 2:58</span><span>🏆 2380</span></div>
+                    <div class="leaderboard-item"><span>3. ХуангджаВоин</span><span>⏱️ 3:12</span><span>🏆 2301</span></div>
+                    <div class="leaderboard-item"><span><strong>Вы (1420)</strong></span><span>⏱️ 4:22</span><span>📈 +120 за неделю</span></div>
+                    <button class="btn-primary" id="tournamentJoinBtn">🏆 Участвовать в турнире провинции</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">📊 Моя статистика</div>
+                    <div>Сыграно партий: 247 | Побед: 103 | Рекордная серия: 7</div>
+                    <div>Любимый тип: Риичи | Среднее время хода: 9 сек</div>
+                </div>
+            </div>
+
+            <!-- МОДЕРАЦИЯ (панель модератора) -->
+            <div id="moderationSection" class="screen-section hidden">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-shield-alt"></i> Панель модерации контента и жалоб</div>
+                    <div class="moderation-alert">❗ 3 новые жалобы на игроков требуют рассмотрения</div>
+                    <div class="skin-row"><div><strong>Жалоба #101</strong><br>Игрок "XxX_Hacker" — оскорбления в чате, скриншоты приложены</div><button class="btn-outline" id="reviewComplaintBtn">Рассмотреть</button></div>
+                    <div class="skin-row"><div><strong>Жалоба #102</strong><br>Подозрительная игра (читы) — история партий</div><button class="btn-outline">Логи</button></div>
+                    <div class="info-badge">История нарушений: предупреждение 2 недели назад. Доступна заморозка.</div>
+                    <button class="btn-primary" id="freezeAccountDemoBtnPc">🔒 Заморозить аккаунт (демо-решение)</button>
+                    <hr>
+                    <div class="card-header">Модерация скинов</div>
+                    <div class="skin-row">Скин "Дракон" от пользователя Li — ожидает проверки <button class="btn-secondary">Одобрить</button> <button class="btn-outline">Отклонить</button></div>
+                </div>
+            </div>
+
+            <!-- ПРОФИЛЬ И НАСТРОЙКИ -->
+            <div id="profileSection" class="screen-section hidden">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-user-circle"></i> Игрок_Мастер</div>
+                    <div>⭐ Рейтинг: 1420 | 🎴 Инвентарь: 24 скина | 💎 450 кристаллов</div>
+                    <button class="btn-outline">Настройки интерфейса</button>
+                    <button class="btn-secondary">История партий</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">📜 Последние партии</div>
+                    <div>🀆 15.04 — Победа (+32 рейтинга) против ИИ-соперника</div>
+                    <div>🀆 14.04 — Поражение (-12) в онлайн-турнире</div>
+                    <div>🀆 12.04 — Победа (+45) в режиме на скорость</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>© Хуангджа Маджонг — AI-чат поддержки всегда рядом | Версия для ПК</footer>
+</div>
+
+<script>
+    // Навигация между разделами (ПК)
+    const sections = {
+        home: document.getElementById('homeSection'),
+        game: document.getElementById('gameSection'),
+        workshop: document.getElementById('workshopSection'),
+        rank: document.getElementById('rankSection'),
+        moderation: document.getElementById('moderationSection'),
+        profile: document.getElementById('profileSection')
+    };
+    const navBtns = document.querySelectorAll('.nav-btn');
+    function showSection(sectionId) {
+        Object.keys(sections).forEach(key => {
+            sections[key].classList.add('hidden');
+        });
+        if(sections[sectionId]) sections[sectionId].classList.remove('hidden');
+        navBtns.forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.getAttribute('data-section') === sectionId) btn.classList.add('active');
+        });
+    }
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const section = btn.getAttribute('data-section');
+            if(section) showSection(section);
+        });
+    });
+
+    // Кнопка "Быстрая игра"
+    document.getElementById('quickGameBtnDesktop')?.addEventListener('click', () => {
+        alert("⚡ Поиск партии: система подбирает 4 игроков (или заполняет ИИ). Согласно правилам маджонга.");
+        showSection('game');
+    });
+    document.getElementById('createPrivateBtnDesktop')?.addEventListener('click', () => {
+        alert("🏮 Создана приватная комната. Поделитесь ссылкой с друзьями. Можно выбрать версию правил.");
+        showSection('game');
+    });
+    document.getElementById('aiTrainBtnDesktop')?.addEventListener('click', () => {
+        alert("🤖 Тренировочный режим с AI-тренером. Доступны подсказки в реальном времени.");
+        showSection('game');
+    });
+    document.getElementById('gotoWorkshopBtn')?.addEventListener('click', () => showSection('workshop'));
+    document.getElementById('backHomeFromGame')?.addEventListener('click', () => showSection('home'));
+
+    // Игровые действия
+    document.getElementById('drawTilePc')?.addEventListener('click', () => alert("🎴 Вы взяли фишку 🀒. Сервер обновил состояние. Ход переходит к сопернику."));
+    document.getElementById('discardTilePc')?.addEventListener('click', () => alert("♻️ Сброшена 🀐. Другие игроки могут объявить Пон или Рон."));
+    document.getElementById('callPungPc')?.addEventListener('click', () => alert("Пон объявлен! Вы взяли сброшенную фишку для сета."));
+    
+    // Симуляция отключения (business rule 60 сек)
+    document.getElementById('simulateDisconnectPc')?.addEventListener('click', () => {
+        alert("📡 Потеря соединения. Сервер фиксирует разрыв, таймер 60 секунд. Партия не завершается.");
+        setTimeout(() => {
+            if(confirm("60 секунд истекло. Переподключиться? (имитация)")) {
+                alert("✅ Игрок восстановлен. Синхронизация состояния... партия продолжена.");
+            } else {
+                alert("🤖 Замена на AI-игрока. Партия продолжается, остальные игроки уведомлены.");
+            }
+        }, 800);
+    });
+
+    // Модерация демо
+    document.getElementById('freezeAccountDemoBtnPc')?.addEventListener('click', () => {
+        alert("🔒 Аккаунт нарушителя заморожен на 24 часа. Обоснование: повторное нарушение правил чата. Уведомление отправлено, лог модерации записан (согласно процессу BPMN).");
+    });
+    document.getElementById('reviewComplaintBtn')?.addEventListener('click', () => {
+        alert("Детали жалобы: скриншоты оскорблений. История нарушений: предупреждение. Доступны действия: предупреждение/блокировка чата/заморозка.");
+    });
+    document.getElementById('uploadSkinDemo')?.addEventListener('click', () => {
+        alert("🖼️ Загрузка скина: проверка формата, добавление в очередь модерации. После одобрения будет доступен в магазине.");
+    });
+    document.getElementById('tournamentJoinBtn')?.addEventListener('click', () => {
+        alert("🏆 Вы зарегистрированы в турнире на скорость! Участники: 128. Соревнование начнется через 15 минут.");
+    });
+    document.getElementById('askCoachBtn')?.addEventListener('click', () => {
+        const tips = ["Соберите четверку бамбуков для ускорения", "В текущей мете лучше сбрасывать ветры", "Попробуйте агрессивную стратегию Риичи"];
+        const randomTip = tips[Math.floor(Math.random() * tips.length)];
+        document.getElementById('coachTip').innerHTML = `🧠 Совет: ${randomTip}`;
+    });
+    
+    // Запуск с главного экрана
+    showSection('home');
+</script>
+</body>
+</html>
